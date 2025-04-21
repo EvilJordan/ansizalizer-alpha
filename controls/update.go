@@ -1,6 +1,8 @@
 package controls
 
 import (
+	"os"
+
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 
@@ -61,7 +63,6 @@ func (m Model) handleMenuUpdate(msg tea.Msg) (Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-
 		case key.Matches(msg, event.KeyMap.Enter):
 			m.active = m.focus
 
@@ -76,6 +77,11 @@ func (m Model) handleMenuUpdate(msg tea.Msg) (Model, tea.Cmd) {
 					m.focus = next
 				}
 			}
+
+		case key.Matches(msg, event.KeyMap.Esc):
+			// Quit program if top-level menu is active and escape pressed
+			tea.Quit()
+			os.Exit(0)
 		}
 	}
 	return m, nil
