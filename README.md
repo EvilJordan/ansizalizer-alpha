@@ -21,11 +21,18 @@ A TUI to convert Images to ANSI strings using bubbletea
 
 ## To Run
 
-(On Windows)
+**On Windows:**
 ```bash
 go install
 go build
 start ansizalizer.exe
+```
+
+**On Mac/Linux:**
+```bash
+go install
+go build
+./ansizalizer
 ```
 
 ![Screenshot 2024-04-02 155006](https://github.com/Zebbeni/ansizalizer/assets/3377325/d41df628-6c84-44e0-aa34-f7fcb72ed827)
