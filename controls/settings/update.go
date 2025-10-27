@@ -15,8 +15,8 @@ const (
 )
 
 var navMap = map[Direction]map[State]State{
-	Down: {Colors: Characters, Characters: Size, Size: Advanced},
-	Up:   {Advanced: Size, Size: Characters, Characters: Colors},
+	Down: {Colors: Characters, Characters: Size, Size: Advanced, Advanced: Alpha},
+	Up:   {Alpha: Advanced, Advanced: Size, Size: Characters, Characters: Colors},
 }
 
 func (m Model) handleSettingsUpdate(msg tea.Msg) (Model, tea.Cmd) {
@@ -75,6 +75,17 @@ func (m Model) handleAdvancedUpdate(msg tea.Msg) (Model, tea.Cmd) {
 	return m, cmd
 }
 
+func (m Model) handleAlphaUpdate(msg tea.Msg) (Model, tea.Cmd) {
+	var cmd tea.Cmd
+	m.Alpha, cmd = m.Alpha.Update(msg)
+
+	if m.Alpha.ShouldUnfocus {
+		return m.handleSettingsUpdate(msg)
+	}
+	return m, cmd
+}
+
+
 func (m Model) handleEnter() (Model, tea.Cmd) {
 	m.active = m.focus
 	switch m.active {
@@ -86,6 +97,8 @@ func (m Model) handleEnter() (Model, tea.Cmd) {
 		m.Size.IsActive = true
 	case Advanced:
 		m.Advanced.IsActive = true
+	case Alpha:
+		m.Alpha.IsActive = true
 	}
 	return m, nil
 }
