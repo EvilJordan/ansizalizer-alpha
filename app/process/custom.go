@@ -3,6 +3,8 @@ package process
 import (
 	"image"
 	"math"
+	"strings"
+	"bufio"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/lucasb-eyer/go-colorful"
@@ -54,10 +56,17 @@ func (m Renderer) processCustom(input image.Image) string {
 
 	for y := 0; y < height*2; y += 2 {
 		for x := 0; x < width*2; x += 2 {
-			r1, _ := colorful.MakeColor(refImg.At(x, y))
-			r2, _ := colorful.MakeColor(refImg.At(x+1, y))
-			r3, _ := colorful.MakeColor(refImg.At(x, y+1))
-			r4, _ := colorful.MakeColor(refImg.At(x+1, y+1))
+			r1, r1Alpha := colorful.MakeColor(refImg.At(x, y))
+			r2, r2Alpha := colorful.MakeColor(refImg.At(x+1, y))
+			r3, r3Alpha := colorful.MakeColor(refImg.At(x, y+1))
+			r4, r4Alpha := colorful.MakeColor(refImg.At(x+1, y+1))
+
+			// if the fourth argument (a [for alpha]) returned from MakeColor is false, this is a transparent pixel
+			if m.Settings.Alpha.ShouldOutputAlpha() && (!r1Alpha || !r2Alpha || !r3Alpha || !r4Alpha) {
+				// use a placeholder to designate the transparent "pixel"
+				row[x/2] = AlphaPlaceholder
+				continue
+			}
 
 			if useFgBg == characters.TwoColor {
 				fg, bg, brightness := m.fgBgBrightness(r1, r2, r3, r4)
@@ -87,7 +96,18 @@ func (m Renderer) processCustom(input image.Image) string {
 		}
 		rows[y/2] = lipgloss.JoinHorizontal(lipgloss.Top, row...)
 	}
-	content += lipgloss.JoinVertical(lipgloss.Left, rows...)
+	if m.Settings.Alpha.ShouldOutputAlpha() {
+		// replace ALPHA placeholder with a blank square (space)
+		contentAlpha := strings.ReplaceAll(lipgloss.JoinVertical(lipgloss.Left, rows...), AlphaPlaceholder, MagicTransparentPixel)
+		// iterate through the return of JoinVertical, separating by lines, trimming whitespace, and then recombining
+		reader := strings.NewReader(contentAlpha)
+		scanner := bufio.NewScanner(reader)
+		for scanner.Scan() {
+			content += strings.TrimSpace(scanner.Text()) + "\n"
+		}
+	} else {
+		content += lipgloss.JoinVertical(lipgloss.Left, rows...)
+	}
 	return content
 }
 

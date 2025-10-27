@@ -20,11 +20,6 @@ import (
 
 var unicodeShadeChars = []rune{' ', '░', '▒', '▓'}
 
-const (
-	AlphaPlaceholder string = "ALPHA"
-	MagicTransparentPixel string = "[39;2;0;0;0;49;2;0;0;0m [0m"
-)
-
 func (m Renderer) processUnicode(input image.Image) string {
 	imgW, imgH := float32(input.Bounds().Dx()), float32(input.Bounds().Dy())
 
