@@ -20,7 +20,6 @@ const (
 
 type Model struct {
 	focus State
-	mode State
 	Browser browser.Model
 	doUseAlpha bool
 	useAlpha bool
@@ -33,7 +32,6 @@ func New(w int) Model {
 
 	return Model{
 		focus: AlphaYes,
-		mode: AlphaYes,
 		Browser: browser.New(nil, w-2),
 		doUseAlpha: true,
 		useAlpha: true,
