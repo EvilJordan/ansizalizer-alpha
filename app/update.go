@@ -23,6 +23,10 @@ func (m Model) handleStartRenderToViewCmd() (Model, tea.Cmd) {
 }
 
 func (m Model) handleFinishRenderToViewMsg(msg event.FinishRenderToViewMsg) (Model, tea.Cmd) {
+	// cut out early if the finished render is for a previously selected image
+	if msg.FilePath != m.controls.FileBrowser.ActiveFile {
+		return m, nil
+	}
 	var cmd tea.Cmd
 	m.viewer, cmd = m.viewer.Update(msg)
 	return m, cmd
