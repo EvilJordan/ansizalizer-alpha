@@ -11,7 +11,6 @@ type State int
 
 const (
 	Input State = iota
-	Browser
 	AlphaYes
 	AlphaNo
 	UseAlpha
