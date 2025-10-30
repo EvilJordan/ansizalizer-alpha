@@ -18,6 +18,7 @@ const (
 )
 
 type Model struct {
+	active State
 	focus State
 	useAlpha bool
 	ShouldUnfocus bool
@@ -30,6 +31,7 @@ func New(w int) Model {
 	return Model{
 		focus: AlphaYes,
 		useAlpha: true,
+		IsActive: false,
 		width: w,
 	}
 }

@@ -38,6 +38,7 @@ func (m Model) handleNav(msg tea.KeyMsg) (Model, tea.Cmd) {
 			return m.setFocus(next)
 		}
 	case key.Matches(msg, event.KeyMap.Up):
+		m.IsActive = false
 		m.ShouldUnfocus = true
 	}
 	return m, nil
@@ -58,11 +59,12 @@ func (m Model) setFocus(focus State) (Model, tea.Cmd) {
 }
 
 func (m Model) handleEnter() (Model, tea.Cmd) {
+	m.active = m.focus
 	switch m.focus {
 	case AlphaYes:
 		m.useAlpha = true
 	case AlphaNo:
 		m.useAlpha = false
 	}
-	return m, event.StartRenderToViewCmd
+	return m, event.StartRenderToViewCmd // on enter, event.StartRenderToViewCmd is not firing when switching to ASCII or Custom outputs
 }
