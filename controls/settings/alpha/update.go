@@ -45,6 +45,8 @@ func (m Model) handleNav(msg tea.KeyMsg) (Model, tea.Cmd) {
 }
 
 func (m Model) setFocus(focus State) (Model, tea.Cmd) {
+	m.IsActive = true
+	m.ShouldUnfocus = false
 	m.focus = focus
 	if m.focus == AlphaYes {
 		m.useAlpha = true
@@ -58,12 +60,11 @@ func (m Model) setFocus(focus State) (Model, tea.Cmd) {
 }
 
 func (m Model) handleEnter() (Model, tea.Cmd) {
-	m.active = m.focus
 	switch m.focus {
 	case AlphaYes:
 		m.useAlpha = true
 	case AlphaNo:
 		m.useAlpha = false
 	}
-	return m, event.StartRenderToViewCmd // on enter, event.StartRenderToViewCmd is not firing when character type is switched, and then retuning to alpha
+	return m, event.StartRenderToViewCmd
 }
