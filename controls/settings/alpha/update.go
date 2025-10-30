@@ -45,14 +45,13 @@ func (m Model) handleNav(msg tea.KeyMsg) (Model, tea.Cmd) {
 }
 
 func (m Model) setFocus(focus State) (Model, tea.Cmd) {
-	if focus == AlphaYes {
+	m.focus = focus
+	if m.focus == AlphaYes {
 		m.useAlpha = true
-		m.focus = AlphaYes
 	}
 
-	if focus == AlphaNo {
+	if m.focus == AlphaNo {
 		m.useAlpha = false
-		m.focus = AlphaNo
 	}
 
 	return m, nil
@@ -66,5 +65,5 @@ func (m Model) handleEnter() (Model, tea.Cmd) {
 	case AlphaNo:
 		m.useAlpha = false
 	}
-	return m, event.StartRenderToViewCmd // on enter, event.StartRenderToViewCmd is not firing when switching to ASCII or Custom outputs
+	return m, event.StartRenderToViewCmd // on enter, event.StartRenderToViewCmd is not firing when character type is switched, and then retuning to alpha
 }
