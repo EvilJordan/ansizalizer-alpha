@@ -39,8 +39,6 @@ func (m Model) Init() tea.Cmd {
 }
 
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
-	var cmd tea.Cmd
-
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
@@ -52,7 +50,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			return m.handleEnter()
 		}
 	}
-	return m, cmd
+	return m, nil
 }
 
 func (m Model) View() string {
