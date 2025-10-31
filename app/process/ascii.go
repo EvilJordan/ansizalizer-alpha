@@ -3,8 +3,6 @@ package process
 import (
 	"image"
 	"math"
-	"strings"
-	"bufio"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/lucasb-eyer/go-colorful"
@@ -13,11 +11,6 @@ import (
 
 	"github.com/Zebbeni/ansizalizer/controls/settings/characters"
 	"github.com/Zebbeni/ansizalizer/controls/settings/size"
-)
-
-const (
-	AlphaPlaceholder string = "ALPHA"
-	MagicTransparentPixel string = "[39;2;0;0;0;49;2;0;0;0m [0m"
 )
 
 // A list of Ascii characters by ascending brightness
@@ -69,7 +62,6 @@ func (m Renderer) processAscii(input image.Image) string {
 		chars = asciiChars
 	}
 
-	content := ""
 	rows := make([]string, height)
 	row := make([]string, width)
 
@@ -107,7 +99,6 @@ func (m Renderer) processAscii(input image.Image) string {
 				}
 				lipFg := lipgloss.Color(fg.Hex())
 				style := lipgloss.NewStyle().Foreground(lipFg).Bold(true)
-
 				index := min(int(brightness*float64(len(chars))), len(chars)-1)
 				char := chars[index]
 				charString := string(char)
@@ -116,19 +107,7 @@ func (m Renderer) processAscii(input image.Image) string {
 		}
 		rows[y/2] = lipgloss.JoinHorizontal(lipgloss.Top, row...)
 	}
-	if m.Settings.Alpha.ShouldOutputAlpha() {
-		// replace ALPHA placeholder with a blank square (space)
-		contentAlpha := strings.ReplaceAll(lipgloss.JoinVertical(lipgloss.Left, rows...), AlphaPlaceholder, MagicTransparentPixel)
-		// iterate through the return of JoinVertical, separating by lines, trimming whitespace, and then recombining
-		reader := strings.NewReader(contentAlpha)
-		scanner := bufio.NewScanner(reader)
-		for scanner.Scan() {
-			content += strings.TrimSpace(scanner.Text()) + "\n"
-		}
-	} else {
-		content += lipgloss.JoinVertical(lipgloss.Left, rows...)
-	}
-	return content
+	return m.outputStrings(rows...)
 }
 
 func (m Renderer) fgBgBrightness(c ...colorful.Color) (fg, bg colorful.Color, b float64) {

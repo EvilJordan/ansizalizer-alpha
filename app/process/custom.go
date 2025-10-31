@@ -3,8 +3,6 @@ package process
 import (
 	"image"
 	"math"
-	"strings"
-	"bufio"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/lucasb-eyer/go-colorful"
@@ -50,7 +48,6 @@ func (m Renderer) processCustom(input image.Image) string {
 		return "Enter at least one custom character"
 	}
 
-	content := ""
 	rows := make([]string, height)
 	row := make([]string, width)
 
@@ -96,19 +93,7 @@ func (m Renderer) processCustom(input image.Image) string {
 		}
 		rows[y/2] = lipgloss.JoinHorizontal(lipgloss.Top, row...)
 	}
-	if m.Settings.Alpha.ShouldOutputAlpha() {
-		// replace ALPHA placeholder with a blank square (space)
-		contentAlpha := strings.ReplaceAll(lipgloss.JoinVertical(lipgloss.Left, rows...), AlphaPlaceholder, MagicTransparentPixel)
-		// iterate through the return of JoinVertical, separating by lines, trimming whitespace, and then recombining
-		reader := strings.NewReader(contentAlpha)
-		scanner := bufio.NewScanner(reader)
-		for scanner.Scan() {
-			content += strings.TrimSpace(scanner.Text()) + "\n"
-		}
-	} else {
-		content += lipgloss.JoinVertical(lipgloss.Left, rows...)
-	}
-	return content
+	return m.outputStrings(rows...)
 }
 
 func min(a, b int) int {

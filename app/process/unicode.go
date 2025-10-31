@@ -1,8 +1,6 @@
 package process
 
 import (
-	"strings"
-	"bufio"
 	"image"
 	_ "image/gif"
 	_ "image/jpeg"
@@ -50,7 +48,6 @@ func (m Renderer) processUnicode(input image.Image) string {
 		refImg = ditherer.Dither(refImg)
 	}
 
-	content := ""
 	rows := make([]string, height)
 	row := make([]string, width)
 	for y := 0; y < height*2; y += 2 {
@@ -88,19 +85,7 @@ func (m Renderer) processUnicode(input image.Image) string {
 		}
 		rows[y/2] = lipgloss.JoinHorizontal(lipgloss.Top, row...)
 	}
-	if m.Settings.Alpha.ShouldOutputAlpha() {
-		// replace ALPHA placeholder with a blank square (space)
-		contentAlpha := strings.ReplaceAll(lipgloss.JoinVertical(lipgloss.Left, rows...), AlphaPlaceholder, MagicTransparentPixel)
-		// iterate through the return of JoinVertical, separating by lines, trimming whitespace, and then recombining
-		reader := strings.NewReader(contentAlpha)
-		scanner := bufio.NewScanner(reader)
-		for scanner.Scan() {
-			content += strings.TrimSpace(scanner.Text()) + "\n"
-		}
-	} else {
-		content += lipgloss.JoinVertical(lipgloss.Left, rows...)
-	}
-	return content
+	return m.outputStrings(rows...)
 }
 
 // find the best block character and foreground and background colors to match
