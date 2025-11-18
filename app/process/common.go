@@ -7,20 +7,18 @@ import (
 )
 
 const (
-	AlphaPlaceholder string = "ALPHA"
-	MagicTransparentPixel string = "[39;2;0;0;0;49;2;0;0;0m [0m"
+	AlphaPlaceholder string = " "
 )
 
 func (m Renderer) outputStrings(rows ...string) (string) {
 	content := ""
 	if m.Settings.Alpha.ShouldOutputAlpha() {
-		// replace ALPHA placeholder with a blank square (space)
-		contentAlpha := strings.ReplaceAll(lipgloss.JoinVertical(lipgloss.Left, rows...), AlphaPlaceholder, MagicTransparentPixel)
-		// iterate through the return of JoinVertical, separating by lines, trimming whitespace, and then recombining
+		contentAlpha := lipgloss.JoinVertical(lipgloss.Left, rows...)
+		// iterate through the return of JoinVertical, separating by lines, trimming our AlphaPlaceholder from the right, and then recombining
 		reader := strings.NewReader(contentAlpha)
 		scanner := bufio.NewScanner(reader)
 		for scanner.Scan() {
-			content += strings.TrimSpace(scanner.Text()) + "\n"
+			content += strings.TrimRight(scanner.Text(), " ") + "\n"
 		}
 	} else {
 		content += lipgloss.JoinVertical(lipgloss.Left, rows...)
